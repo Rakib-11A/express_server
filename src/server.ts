@@ -5,55 +5,22 @@
  * Date: 30/11/2025
  */
 import express, { Request, Response } from "express";
-import { Pool } from 'pg';
-import dotenv from 'dotenv';
-import path from 'path';
-
-dotenv.config({path: path.join(process.cwd(), ".env")});
-
+import { config } from './config/env'
+import { initDB } from './config/database'
+import { pool } from './config/database'
 const app = express();
-const port = 5000;
-
+const port = config.port
 // parser
 app.use(express.json());
 
 // form data er jonno
 // app.use(express.urlencoded());
 
-// Database connection
-const pool = new Pool({
-    connectionString: `${process.env.CONNECTION_STRING}`
+// Initializing DB (non-blocking)
+initDB().catch(error => {
+    console.error('Failed to initialize database:', error);
+    // Don't exit - allow server to run so user can see the error via API
 });
-
-const initDB = async() => {
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            email VARCHAR(150) UNIQUE NOT NULL,
-            age INT,
-            phone VARCHAR(15),
-            address TEXT,
-            created_at TIMESTAMP DEFAULT NOW(),
-            updated_at TIMESTAMP DEFAULT NOW()
-        );
-    `)
-
-    await pool.query(`
-            CREATE TABLE IF NOT EXISTS todos(
-                id SERIAL PRIMARY KEY,
-                user_id INT REFERENCES users(id) ON DELETE CASCADE,
-                title VARCHAR(250) NOT NULL,
-                description TEXT,
-                completed BOOLEAN DEFAULT FALSE,
-                due_date DATE,
-                created_at TIMESTAMP DEFAULT NOW(),
-                updated_at TIMESTAMP DEFAULT NOW()
-            );
-        `)
-};
-
-initDB();
 
 app.get('/', (req: Request, res: Response) => {
     res.send("Alhamdulillah......working.......fine.....");
@@ -329,5 +296,5 @@ app.delete('/todos/:id', async (req: Request, res: Response) => {
 })
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`Server is running on port ${port}`)
 })
