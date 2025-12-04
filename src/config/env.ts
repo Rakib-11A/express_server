@@ -7,4 +7,5 @@ export const config = {
     port: process.env.PORT || 5000,
     databaseUrl: process.env.CONNECTION_STRING,
     nodeEnv: process.env.NODE_ENV || 'development',
+    jwtSecret: process.env.JWT_SECRET,
 };
