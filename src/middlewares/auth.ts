@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { config } from "../config/env";
 
 interface AuthRequest extends Request {
-    user?: any;
+    user?: any; 
 }
 
 const auth = (...roles: string[]) => {

@@ -4,41 +4,9 @@
  * Author: Rakib Hasan
  * Date: 30/11/2025
  */
-import express, { Request, Response, NextFunction } from "express";
-import { config } from './config/env'
-import { initDB } from './config/database'
-import { pool } from './config/database'
-import { logger } from "./middlewares/logger";
-import { userRouter } from "./rotues/user.route";
-import { todoRouter } from "./rotues/todo.route";
-import { authRoutes } from "./rotues/auth.route";
-const app = express();
-const port = config.port
-// parser
-app.use(express.json());
+import app from './app';
+import { config } from './config/env';
 
-// form data er jonno
-// app.use(express.urlencoded());
-
-// Initializing DB (non-blocking)
-initDB().catch(error => {
-    console.error('Failed to initialize database:', error);
-    // Don't exit - allow server to run so user can see the error via API
-});
-
-
-app.get('/',logger, (req: Request, res: Response) => {
-    res.send("Alhamdulillah......working.......fine.....");
-})
-
-//user CRUD
-// Create user
-app.use('/users', userRouter)
-
-app.use('/todos', todoRouter)
-
-app.use('/auth', authRoutes)
-
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
+app.listen(config.port, () => {
+    console.log(`Server is running on port ${config.port}`)
 })
